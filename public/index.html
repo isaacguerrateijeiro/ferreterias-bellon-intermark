@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      const mobileStyle = '<style>@media(max-width:430px){html,body{overflow:hidden;background:#fff!important}#root{width:100vw;height:100dvh;height:100svh;overflow:hidden}#root>*{display:flex!important;align-items:flex-start!important;justify-content:flex-start!important;min-height:100dvh!important;min-height:100svh!important;background:transparent!important;padding:0!important}.iphone{width:100vw!important;height:100dvh!important;height:100svh!important;border-radius:0!important;box-shadow:none!important;margin:0!important;flex-shrink:0!important}.iphone .notch{display:none!important}.status-bar{height:auto!important;padding-top:max(16px,env(safe-area-inset-top))!important;padding-bottom:8px!important}}</style>';
+      const mobileStyle = '<style>@media(max-width:480px){html,body{overflow:hidden!important}.iphone{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;margin:0!important;z-index:9999!important}.iphone .notch{display:none!important}.status-bar{padding-top:max(16px,env(safe-area-inset-top))!important;height:auto!important;padding-bottom:4px!important}}</style>';
       template = template.slice(0, i) + resourceScript + mobileStyle + template.slice(i);
     }
 
