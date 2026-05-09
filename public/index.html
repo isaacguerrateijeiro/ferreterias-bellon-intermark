@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      const mobileStyle = '<style>@media(max-width:480px){html,body{overflow:hidden!important}.iphone{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;margin:0!important;z-index:9999!important}.iphone .notch{display:none!important}.iphone-screen{top:44px!important}.status-bar{display:none!important}}</style>';
+      const mobileStyle = '<style>@media(max-width:480px){html,body{overflow:hidden!important}.iphone{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;margin:0!important;z-index:9999!important}.iphone .notch{display:none!important}.iphone-screen{top:44px!important}.status-bar{display:none!important}input,textarea,select{font-size:16px!important}}</style>';
       template = template.slice(0, i) + resourceScript + mobileStyle + template.slice(i);
     }
 
