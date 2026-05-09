@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      const mobileStyle = '<style>@media(max-width:480px){html,body{overflow:hidden!important}.iphone{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;margin:0!important;z-index:9999!important}.iphone .notch{display:none!important}.status-bar{padding-top:max(16px,env(safe-area-inset-top))!important;height:auto!important;padding-bottom:4px!important}}</style>';
+      const mobileStyle = '<style>@media(max-width:480px){html,body{overflow:hidden!important}.iphone{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;margin:0!important;z-index:9999!important}.iphone .notch{display:none!important}.iphone-screen{top:44px!important}.status-bar{display:none!important}}</style>';
       template = template.slice(0, i) + resourceScript + mobileStyle + template.slice(i);
     }
 
@@ -166,6 +166,100 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
       window.Babel.transformScriptTags();
     }
+
+    // ── Mobile enhancements (≤480px) ──────────────────────────────────────────
+    if (window.matchMedia('(max-width:480px)').matches) {
+      var MOB_SCREENS = [
+        {key:'login',    label:'01 · Login',           desc:'Acceso seguro'},
+        {key:'home',     label:'02 · Home',            desc:'Dashboard B2B con crédito'},
+        {key:'catalog',  label:'03 · Catálogo',        desc:'Búsqueda + categorías'},
+        {key:'product',  label:'04 · Detalle producto',desc:'Ficha de producto', param:'MAK-DTD157'},
+        {key:'cart',     label:'05 · Carrito',         desc:'Resumen + descuento'},
+        {key:'cart-empty',label:'05b · Carrito vacío', desc:'Estado vacío'},
+        {key:'checkout', label:'06 · Checkout',        desc:'Entrega + pago + facturación'},
+        {key:'confirm',  label:'07 · Confirmación',    desc:'Pedido confirmado'},
+        {key:'tracking', label:'08 · Seguimiento',     desc:'Estado en tiempo real'},
+        {key:'orders',   label:'08b · Mis pedidos',    desc:'Historial'},
+        {key:'account',  label:'09 · Cuenta',          desc:'Perfil B2B + secciones'},
+        {key:'reorder',  label:'10 · Pedido habitual', desc:'Reorder rápido + IA'},
+        {key:'quick',    label:'11 · Pedido rápido',   desc:'SKU bulk / Excel / scanner'},
+        {key:'statement',label:'12 · Estado de cuenta',desc:'Crédito + facturas'},
+        {key:'works',    label:'13 · Mis obras',       desc:'Proyectos por obra'},
+        {key:'work',     label:'13b · Detalle obra',   desc:'Lista por obra', param:'palmas'},
+        {key:'chat',     label:'14 · Chat vendedor',   desc:'Carlos Reyes + cotizaciones'},
+        {key:'search',   label:'15 · Búsqueda IA',     desc:'Texto · voz · cámara'}
+      ];
+
+      function mobSetup() {
+        var iphone = document.querySelector('.iphone');
+        if (!iphone || document.getElementById('__mob_nav')) return;
+
+        // ── Nav bar ──────────────────────────────────────────────────────────
+        var navBar = document.createElement('div');
+        navBar.id = '__mob_nav';
+        navBar.style.cssText = 'position:absolute;top:0;left:0;right:0;height:44px;background:#ffffff;border-bottom:1px solid #E5E7EB;display:flex;align-items:center;justify-content:center;z-index:99998;';
+
+        var navBtn = document.createElement('button');
+        navBtn.style.cssText = 'font-family:inherit;font-size:13px;font-weight:600;color:#ED7D1A;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;padding:0 16px;height:44px;';
+        navBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Ver todas (índice)</span>';
+        navBar.appendChild(navBtn);
+        iphone.appendChild(navBar);
+
+        // ── Index panel ──────────────────────────────────────────────────────
+        var panel = document.createElement('div');
+        panel.id = '__mob_panel';
+        panel.style.cssText = 'position:absolute;top:44px;left:0;right:0;bottom:0;background:#ffffff;z-index:99999;overflow-y:auto;display:none;flex-direction:column;-webkit-overflow-scrolling:touch;';
+
+        var ph = document.createElement('div');
+        ph.style.cssText = 'padding:20px 16px 14px;border-bottom:1px solid #E5E7EB;flex-shrink:0;';
+        ph.innerHTML = '<div style="font-size:18px;font-weight:700;color:#0A0A0A;letter-spacing:-0.3px">Todas las pantallas</div><div style="font-size:12px;color:#5A6470;margin-top:3px">18 vistas navegables · toca para abrir</div>';
+        panel.appendChild(ph);
+
+        MOB_SCREENS.forEach(function(s) {
+          var item = document.createElement('button');
+          item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:none;border-bottom:1px solid #F3F4F6;background:none;width:100%;text-align:left;cursor:pointer;font-family:inherit;';
+          item.innerHTML = '<div><div style="font-size:14px;font-weight:600;color:#0A0A0A">' + s.label + '</div><div style="font-size:12px;color:#5A6470;margin-top:2px">' + s.desc + '</div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9AA1AB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+          item.addEventListener('click', function() {
+            window.location.hash = '#/' + s.key + (s.param ? '/' + s.param : '');
+            panel.style.display = 'none';
+            navBtn.querySelector('span').textContent = 'Ver todas (índice)';
+          });
+          panel.appendChild(item);
+        });
+
+        iphone.appendChild(panel);
+
+        navBtn.addEventListener('click', function() {
+          if (panel.style.display === 'flex') {
+            panel.style.display = 'none';
+            navBtn.querySelector('span').textContent = 'Ver todas (índice)';
+          } else {
+            panel.style.display = 'flex';
+            panel.style.flexDirection = 'column';
+            panel.scrollTop = 0;
+            navBtn.querySelector('span').textContent = 'Ver una pantalla';
+          }
+        });
+
+        // ── Tab bar height fix ───────────────────────────────────────────────
+        function fixTabBar() {
+          document.querySelectorAll('.flex-shrink-0').forEach(function(el) {
+            if (parseFloat(el.style.height) === 88) {
+              el.style.height = 'auto';
+              el.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
+            }
+          });
+        }
+        fixTabBar();
+        new MutationObserver(fixTabBar).observe(iphone, {childList:true, subtree:true});
+      }
+
+      var mobTimer = setInterval(function() {
+        if (document.querySelector('.iphone')) { clearInterval(mobTimer); setTimeout(mobSetup, 400); }
+      }, 100);
+    }
+    // ── End mobile enhancements ────────────────────────────────────────────────
+
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);
     console.error('Bundle unpack error:', err);
